@@ -69,14 +69,14 @@ function showTitle() {
     stage.addChild(rulesBtn);
 
     var titleView = new createjs.Container();
-    container.addChild(titleBg, startBtn, rulesBtn);
+    titleView.addChild(titleBg, startBtn, rulesBtn);
     stage.addChild(titleView);
 
     rulesBtn.addEventListener('click',
         function(e){
-            var rulesView;
+           // var rulesView;
             // need to show rules of the game/////////////////
-        });
+       });
 
     startBtn.addEventListener('click',
         function(e){
@@ -89,7 +89,9 @@ function showTitle() {
 }
 
 function startGame() {
-
+    createjs.Ticker.setFPS(60);
+    createjs.Ticker.addEventListener("tick", tock);
+    
     gameBg = createjs.Bitmap("img/bg.jpg");
     stage.addChild(gameBg);
 }
