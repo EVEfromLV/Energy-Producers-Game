@@ -2,11 +2,6 @@
  * Created by IevaSilina on 30/05/16.
  */
 var stage;
-var titleBg;
-var playBtn;
-var rulesBtn;
-var titleView = new Container();
-var rulesView;
 var gameBg;
 var alertBg;
 var score;
@@ -31,7 +26,7 @@ function preLoad(){
 
     queue = new createjs.LoadQueue(true);
     queue.on("progress", progressIs);
-    queue.on("complete", startGame);
+    queue.on("complete", showTitle);
 
     queue.loadManifest([
         "img/biofuel.svg",
@@ -51,6 +46,34 @@ function preLoad(){
     ])
 }
 
+function showTitle() {
+    var titleBg = new createjs.Bitmap("img/start_bg.jpg");
+    stage.addChild(titleBg);
+    
+    var startBtn = new createjs.Bitmap("img/start_btn.png");
+    stage.addChild(startBtn);
+
+    var rulesBtn = new createjs.Bitmap("img/rules_btn.png");
+    stage.addChild(rulesBtn);
+
+    var titleView = new Container();
+    container.addChild(titleBg, startBtn, rulesBtn);
+
+    rulesBtn.addEventListener('click',
+        function(e){
+            var rulesView;
+            // need to show rules of the game/////////////////
+        });
+
+
+    startBtn.addEventListener('click',
+        function(e){
+            stage.removeChild(e.target);
+            stage.removeChild(titleView);
+            gameIsRunning = true;
+        });
+}
+
 function progressIs(e) {
     preLoadText.text = Math.round(e.progress*100) + "%";
     stage.update();
@@ -62,16 +85,6 @@ function startGame() {
 
     gameBg = createjs.Bitmap("img/bg.jpg");
     stage.addChild(gameBg);
-
-    var startBtn = new createjs.Bitmap("img/start_btn.png");
-    stage.addChild(startBtn);
-
-    startBtn.addEventListener('click',
-        function(e){
-            stage.removeChild(e.target);
-            stage.removeChild(preLoadText);
-            gameIsRunning = true;
-        });
 }
 
 function tock (e) {
