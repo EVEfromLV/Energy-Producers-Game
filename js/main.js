@@ -59,7 +59,7 @@ function progressIs(e) {
     stage.update();
 }
 
-function showTitle() {
+function showTitle(s) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", tock);
 
@@ -103,23 +103,20 @@ function showTitle() {
         });
 
     startBtn.addEventListener('click',
-        function(e){
-            stage.removeChild(e.target);
+        function(){
+            stage.removeChild(this.target);
             stage.removeChild(titleView);
 
             gameIsRunning = true;
             startGame();
         });
 
-    stage.update();
+    stage.update(s);
 }
 
 function startGame() {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", tock);
-
-    gameBg = createjs.Bitmap("img/bg.jpg");
-    stage.addChild(gameBg);
 }
 
 function tock (e) {
