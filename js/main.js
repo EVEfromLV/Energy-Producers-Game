@@ -9,6 +9,8 @@ score = 0;
 var g,b;
 var overlay;
 var tryAgain;
+var reward;
+var gotReward;
 var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
@@ -200,6 +202,19 @@ function lostClick() {
 }
 
 function gameEnded() {
+
+    if (score > 2) {
+        reward = new createjs.Bitmap("img/reward.svg");
+        reward.width = 200;
+        reward.height = 50;
+        reward.x = stage.canvas.width / 2 - reward.width / 2;
+        reward.y = stage.canvas.height / 2 - reward.height / 2;
+        stage.addChild(reward);
+        gotReward = true;
+    } else {
+        gotReward = false;
+    }
+
     gameIsRunning = false;
     overlay = new createjs.Shape();
     overlay.graphics.beginFill('#424242').drawRect(0, 0, 200, 200);
@@ -236,6 +251,9 @@ function gameReset() {
     stage.removeChild(g);
     stage.removeChild(overlay);
     stage.removeChild(tryAgain);
+    if (gotReward === true) {
+        stage.removeChild(reward);
+    }
 
     showEnergy();
 }
