@@ -5,6 +5,7 @@ var stage;
 var alertBg;
 var score;
 score = 0;
+var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
 var lastEnergy;
@@ -113,59 +114,61 @@ function showTitle(s) {
             showGame();
         });
 
+    // Is this necessary here?
     stage.update(s);
 }
 
 function showGame() {
     // first Energy appears ///////////
-   // showEnergy();
-    score = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
-    score.x = score.y = 20;
-    stage.addChild(score);
+    scoreText = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
+    scoreText.x = scoreText.y = 20;
+    stage.addChild(scoreText);
+    showEnergy();
 }
 
 function showEnergy() {
-    if (currentEnergies === totalEnergies){
-        showAlert();
-    } else {
-        if(lastEnergy != null)
-            {
-                lastEnergy.onPress = null;
-                stage.removeChild(lastEnergy);
-                stage.update();
-                lastEnergy = null;
-            }
-    }
 
-    goodEnergy.push("wind.svg");
-    badEnergy.push("coal.svg");
+    if (currentEnergies === totalEnergies){
+        showSummary();
+    } //else {
+        //if(lastEnergy !== null)
+         //   {
+           //     lastEnergy.onClick = null;
+           //     stage.removeChild(lastEnergy);
+           //     lastEnergy = null;
+           //     stage.update();
+          //  }
 
     var randomPos = Math.floor(Math.random() * 8);
-    var energy = goodEnergy;
+    var g = new createjs.Bitmap("img/wind.svg");
+    g.x = energyX[randomPos];
+    g.y = energyY[randomPos];
+    goodEnergy.push(g);
+    stage.addChild(g);
+    g.addEventListener('click', function(e){
+        console.log('click')
+        score++;
+        scoreText.text=score + '/' + totalEnergies + " energies"
+    });
 
-    energy.x = energyX[randomPos];
-    energy.y = energyY[randomPos];
-    stage.addChild(energy);
-    energy.onPress = wormHit;
+ //   randomPos = Math.floor(Math.random() * 8);
+    g = new createjs.Bitmap("img/coal.svg");
+    badEnergy.push(g);
+    stage.addChild(g);
+    g.x = energyX[randomPos];
+    g.y = energyY[randomPos];
+    
+    //   energy.on("click", console.log("it works"));
+        //= wormHit;
 
-    lastEnergy = energy;
-    lastEnergy.scaleY = 0.3;
-    lastEnergy.y +=42;
-    stage.update();
-
-   // Tween.get(lastEnergy).to({scaleY: 1, y: energyY[randomPos]}, 200).wait(1000).call(function(){currentEnergies++; showEnergy();
-   // });
+ //   lastEnergy = energy;
+//    lastEnergy.scaleY = 0.3;
+//    lastEnergy.y +=42;
+//    stage.update();
 }
 
-function startGame() {
-    //createjs.Ticker.setFPS(60);
-    //createjs.Ticker.addEventListener("tick", tock);
 
-}
 
-function tock (e) {
-    if(gameIsRunning===true){
-        //startGame();
-    }
+function tock(e) {
     stage.update(e);
 }
