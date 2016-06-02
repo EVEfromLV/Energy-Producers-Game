@@ -6,6 +6,7 @@ var stage;
 var alertBg;
 var score;
 score = 0;
+var g,b;
 var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
@@ -128,12 +129,11 @@ function showGame() {
 }
 
 function showEnergy() {
-    var g,b;
     gRand = generateRandomNumber(7);
     bRand = generateRandomNumber(7);
 
     if (gRand === bRand) {
-        showEnergy()
+        showEnergy();
     }
 
     else {
@@ -145,10 +145,8 @@ function showEnergy() {
         g.addEventListener('click', function(e){
             console.log('good');
             score++;
-            clicks--;
-            scoreText.text=score + '/' + totalEnergies + " energies";
-            stage.removeChild(g, b);
-            showEnergy();
+            lostClick();
+            clearTimeout(timeOut);
             stage.update();
         });
 
@@ -160,12 +158,14 @@ function showEnergy() {
         b.y = energyY[bRand];
         b.addEventListener('click', function(energyHit){
             console.log('bad');
-            clicks--;
-            scoreText.text=score + '/' + totalEnergies + " energies";
-            stage.removeChild(b, g);
-            showEnergy();
+            lostClick();
+            clearTimeout(timeOut);
             stage.update();
         });
+
+        var timeOut = setTimeout( function () {
+            lostClick();
+        }, 2000);
     }
 
     if (clicks === 0){
@@ -181,6 +181,13 @@ function showSummary() {
     createjs.Ticker.removeAllListeners();
     stage.update();
 
+}
+
+function lostClick() {
+    clicks--;
+    scoreText.text=score + '/' + totalEnergies + " energies";
+    stage.removeChild(g, b);
+    showEnergy();
 }
 
 function tock(e) {
