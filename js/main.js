@@ -1,6 +1,7 @@
 /*
  * Created by IevaSilina on 30/05/16.
  */
+
 var stage;
 var alertBg;
 var score;
@@ -115,7 +116,6 @@ function showTitle(s) {
             showGame();
         });
 
-    // Is this necessary here?
     stage.update(s);
 }
 
@@ -129,43 +129,60 @@ function showGame() {
 
 function showEnergy() {
     var g,b;
-    var randomPos = Math.floor(Math.random() * 7);
-    g = new createjs.Bitmap("img/wind.svg");
-    g.x = energyX[randomPos];
-    g.y = energyY[randomPos];
-    goodEnergy.push(g);
-    stage.addChild(g);
-    g.addEventListener('click', function(e){
-        console.log('good');
-        score++;
-        clicks--;
-        scoreText.text=score + '/' + totalEnergies + " energies";
-        stage.removeChild(g, b);
-        showEnergy();
-        stage.update();
-    });
+    gRand = generateRandomNumber(7);
+    bRand = generateRandomNumber(7);
 
-    randomPos = Math.floor(Math.random() * 7);
-    b = new createjs.Bitmap("img/coal.svg");
-    badEnergy.push(b);
-    stage.addChild(b);
-    b.x = energyX[randomPos];
-    b.y = energyY[randomPos];
-    b.addEventListener('click', function(energyHit){
-        console.log('bad');
-        clicks--;
-        scoreText.text=score + '/' + totalEnergies + " energies";
-        stage.removeChild(b, g);
-        showEnergy();
-        stage.update();
-    });
+    if (gRand === bRand) {
+        showEnergy()
+    }
+
+    else {
+        g = new createjs.Bitmap("img/wind.svg");
+        g.x = energyX[gRand];
+        g.y = energyY[gRand];
+        goodEnergy.push(g);
+        stage.addChild(g);
+        g.addEventListener('click', function(e){
+            console.log('good');
+            score++;
+            clicks--;
+            scoreText.text=score + '/' + totalEnergies + " energies";
+            stage.removeChild(g, b);
+            showEnergy();
+            stage.update();
+        });
+
+
+        b = new createjs.Bitmap("img/coal.svg");
+        badEnergy.push(b);
+        stage.addChild(b);
+        b.x = energyX[bRand];
+        b.y = energyY[bRand];
+        b.addEventListener('click', function(energyHit){
+            console.log('bad');
+            clicks--;
+            scoreText.text=score + '/' + totalEnergies + " energies";
+            stage.removeChild(b, g);
+            showEnergy();
+            stage.update();
+        });
+    }
 
     if (clicks === 0){
         showSummary();
     }
 }
 
-function tock(e) {
+function generateRandomNumber(max) {
+    return Math.floor(Math.random() * max);
+}
 
+function showSummary() {
+    createjs.Ticker.removeAllListeners();
+    stage.update();
+
+}
+
+function tock(e) {
     stage.update(e);
 }
