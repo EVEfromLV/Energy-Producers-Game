@@ -5,7 +5,7 @@ var stage;
 var alertBg;
 var score;
 score = 0;
-var clicks  = 10;
+var clicks  = 15;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
@@ -163,11 +163,7 @@ function showEnergy() {
     });
 
     if (clicks === 0){
-        showSummary(
-            if(){
-                
-            }
-        );
+        showSummary();
     }
 }
 
