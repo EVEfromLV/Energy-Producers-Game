@@ -151,13 +151,13 @@ function showEnergy() {
         scoreText.text=score + '/' + totalEnergies + " energies"
     });
 
- //   randomPos = Math.floor(Math.random() * 8);
+    randomPos = Math.floor(Math.random() * 8);
     g = new createjs.Bitmap("img/coal.svg");
     badEnergy.push(g);
     stage.addChild(g);
     g.x = energyX[randomPos];
     g.y = energyY[randomPos];
-    
+
     //   energy.on("click", console.log("it works"));
         //= wormHit;
 
