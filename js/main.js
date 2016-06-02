@@ -10,8 +10,8 @@ var goodEnergy = [];
 var badEnergy = [];
 var lastEnergy;
 
-var energyX = [80, 198, 338, 70, 225, 376, 142, 356];
-var energyY = [11, 51, 34, 110, 136, 96, 211, 186];
+var energyX = [210, 105, 340, 210, 520, 583, 659];
+var energyY = [65, 235, 170, 425, 115, 418, 241];
 
 var queue;
 var preLoadText;
@@ -131,15 +131,19 @@ function showEnergy() {
     if (currentEnergies === totalEnergies){
         showSummary();
     } //else {
-       // if (lastEnergy !== null) {
-       //     lastEnergy.onClick = null;
+      // if (this.lastEnergy !== null) {
+       //    this.lastEnergy.on('click', function(lastEnergy === null){ console.log(works);});
+       //    stage.removeChild(this.lastEnergy);
+           //this.lastEnergy = null;
+       //    stage.update();
+      // }
        //     stage.removeChild(lastEnergy);
        //     lastEnergy = null;
        //     stage.update();
        // }
     //}
 
-    var randomPos = Math.floor(Math.random() * 8);
+    var randomPos = Math.floor(Math.random() * 7);
     var g = new createjs.Bitmap("img/wind.svg");
     g.x = energyX[randomPos];
     g.y = energyY[randomPos];
@@ -150,11 +154,10 @@ function showEnergy() {
         score++;
         scoreText.text=score + '/' + totalEnergies + " energies";
         stage.removeChild(g);
-        lastEnergy = null;
         stage.update();
     });
 
-    randomPos = Math.floor(Math.random() * 8);
+    randomPos = Math.floor(Math.random() * 7);
     b = new createjs.Bitmap("img/coal.svg");
     badEnergy.push(b);
     stage.addChild(b);
@@ -165,16 +168,16 @@ function showEnergy() {
         score--;
         scoreText.text=score + '/' + totalEnergies + " energies";
         stage.removeChild(b);
-        lastEnergy = null;
         stage.update();
     });
 
- //   lastEnergy = energy;
+//    var lastEnergy = g;
 //    lastEnergy.scaleY = 0.3;
 //    lastEnergy.y +=42;
 //    stage.update();
 }
 
 function tock(e) {
+
     stage.update(e);
 }
