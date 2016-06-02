@@ -5,6 +5,7 @@ var stage;
 var alertBg;
 var score;
 score = 0;
+var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
@@ -127,24 +128,10 @@ function showGame() {
 }
 
 function showEnergy() {
-
-    if (currentEnergies === totalEnergies){
-        showSummary();
-    } //else {
-      // if (this.lastEnergy !== null) {
-       //    this.lastEnergy.on('click', function(lastEnergy === null){ console.log(works);});
-       //    stage.removeChild(this.lastEnergy);
-           //this.lastEnergy = null;
-       //    stage.update();
-      // }
-       //     stage.removeChild(lastEnergy);
-       //     lastEnergy = null;
-       //     stage.update();
-       // }
-    //}
-
+    var lastG = g;
+    var g,b;
     var randomPos = Math.floor(Math.random() * 7);
-    var g = new createjs.Bitmap("img/wind.svg");
+    g = new createjs.Bitmap("img/wind.svg");
     g.x = energyX[randomPos];
     g.y = energyY[randomPos];
     goodEnergy.push(g);
@@ -152,8 +139,10 @@ function showEnergy() {
     g.addEventListener('click', function(e){
         console.log('good');
         score++;
+        clicks--;
         scoreText.text=score + '/' + totalEnergies + " energies";
-        stage.removeChild(g);
+        stage.removeChild(g, b);
+        showEnergy();
         stage.update();
     });
 
@@ -166,15 +155,20 @@ function showEnergy() {
     b.addEventListener('click', function(energyHit){
         console.log('bad');
         score--;
+        clicks--;
         scoreText.text=score + '/' + totalEnergies + " energies";
-        stage.removeChild(b);
+        stage.removeChild(b, g);
+        showEnergy();
         stage.update();
     });
 
-//    var lastEnergy = g;
-//    lastEnergy.scaleY = 0.3;
-//    lastEnergy.y +=42;
-//    stage.update();
+    if (clicks === 0){
+        showSummary(
+            if(){
+                
+            }
+        );
+    }
 }
 
 function tock(e) {
