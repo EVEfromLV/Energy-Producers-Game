@@ -131,13 +131,13 @@ function showEnergy() {
     if (currentEnergies === totalEnergies){
         showSummary();
     } //else {
-        //if(lastEnergy !== null)
-         //   {
-           //     lastEnergy.onClick = null;
-           //     stage.removeChild(lastEnergy);
-           //     lastEnergy = null;
-           //     stage.update();
-          //  }
+       // if (lastEnergy !== null) {
+       //     lastEnergy.onClick = null;
+       //     stage.removeChild(lastEnergy);
+       //     lastEnergy = null;
+       //     stage.update();
+       // }
+    //}
 
     var randomPos = Math.floor(Math.random() * 8);
     var g = new createjs.Bitmap("img/wind.svg");
@@ -146,28 +146,34 @@ function showEnergy() {
     goodEnergy.push(g);
     stage.addChild(g);
     g.addEventListener('click', function(e){
-        console.log('click')
+        console.log('good');
         score++;
-        scoreText.text=score + '/' + totalEnergies + " energies"
+        scoreText.text=score + '/' + totalEnergies + " energies";
+        stage.removeChild(g);
+        lastEnergy = null;
+        stage.update();
     });
 
     randomPos = Math.floor(Math.random() * 8);
-    g = new createjs.Bitmap("img/coal.svg");
-    badEnergy.push(g);
-    stage.addChild(g);
-    g.x = energyX[randomPos];
-    g.y = energyY[randomPos];
-
-    //   energy.on("click", console.log("it works"));
-        //= wormHit;
+    b = new createjs.Bitmap("img/coal.svg");
+    badEnergy.push(b);
+    stage.addChild(b);
+    b.x = energyX[randomPos];
+    b.y = energyY[randomPos];
+    b.addEventListener('click', function(energyHit){
+        console.log('bad');
+        score--;
+        scoreText.text=score + '/' + totalEnergies + " energies";
+        stage.removeChild(b);
+        lastEnergy = null;
+        stage.update();
+    });
 
  //   lastEnergy = energy;
 //    lastEnergy.scaleY = 0.3;
 //    lastEnergy.y +=42;
 //    stage.update();
 }
-
-
 
 function tock(e) {
     stage.update(e);
