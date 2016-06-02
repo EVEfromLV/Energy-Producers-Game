@@ -9,7 +9,9 @@ score = 0;
 var g,b;
 var overlay;
 var tryAgain;
+var gameTime;
 var reward;
+var globalTimer = 1200;
 var gotReward;
 var clicks  = 10;
 var scoreText;
@@ -136,8 +138,6 @@ function showEnergy() {
 
     if (gameIsRunning === true) {
 
-        console.log(clicks);
-
         gRand = generateRandomNumber(7);
         bRand = generateRandomNumber(7);
 
@@ -204,7 +204,7 @@ function lostClick() {
 function gameEnded() {
 
     if (score > 2) {
-        reward = new createjs.Bitmap("img/reward.svg");
+        reward = new createjs.Bitmap("img/nuclear.svg");
         reward.width = 200;
         reward.height = 50;
         reward.x = stage.canvas.width / 2 - reward.width / 2;
@@ -241,12 +241,15 @@ function gameEnded() {
 }
 
 function gameReset() {
+    console.log("gameReset");
     gameIsRunning = true;
+    globalTimer = 1200;
     score = 0;
     clicks = 10;
     scoreText.x = scoreText.y = 20;
     goodEnergy = [];
     badEnergy = [];
+    clearTimeout(gameTime);
     stage.removeChild(b);
     stage.removeChild(g);
     stage.removeChild(overlay);
@@ -260,4 +263,13 @@ function gameReset() {
 
 function tock(e) {
     stage.update(e);
+
+    if (gameIsRunning) {
+        console.log(globalTimer);
+        globalTimer--;
+
+        if (globalTimer === 0) {
+            gameEnded();
+        }
+    }
 }
