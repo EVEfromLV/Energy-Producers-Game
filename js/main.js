@@ -7,7 +7,9 @@ var alertBg;
 var score;
 score = 0;
 var g,b;
-var clicks  = 7;
+var overlay;
+var tryAgain;
+var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
@@ -132,6 +134,8 @@ function showEnergy() {
 
     if (gameIsRunning === true) {
 
+        console.log(clicks);
+
         gRand = generateRandomNumber(7);
         bRand = generateRandomNumber(7);
 
@@ -153,7 +157,6 @@ function showEnergy() {
                 clearTimeout(timeOut);
                 stage.update();
             });
-
 
             b = new createjs.Bitmap("img/coal.svg");
             if (gameIsRunning === true) {
@@ -215,7 +218,7 @@ function gameEnded() {
     scoreText.x = stage.canvas.width / 2 - 70;
     scoreText.y = stage.canvas.height / 2;
 
-    var tryAgain = new createjs.Bitmap("img/try_again.svg");
+    tryAgain = new createjs.Bitmap("img/try_again.svg");
     stage.addChild(tryAgain);
     tryAgain.addEventListener('click', function (e) {
         gameReset();
@@ -223,7 +226,18 @@ function gameEnded() {
 }
 
 function gameReset() {
+    gameIsRunning = true;
+    score = 0;
+    clicks = 10;
+    scoreText.x = scoreText.y = 20;
+    goodEnergy = [];
+    badEnergy = [];
+    stage.removeChild(b);
+    stage.removeChild(g);
+    stage.removeChild(overlay);
+    stage.removeChild(tryAgain);
 
+    showEnergy();
 }
 
 function tock(e) {
