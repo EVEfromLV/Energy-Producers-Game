@@ -69,12 +69,12 @@ function showTitle(s) {
     var titleBg = new createjs.Bitmap("img/start_bg.jpg");
     stage.addChild(titleBg);
 
-    startBtn = new createjs.Bitmap("img/start_btn.png");
+    var startBtn = new createjs.Bitmap("img/start_btn.png");
     stage.addChild(startBtn);
     startBtn.x = stage.canvas.width/2.9;
     startBtn.y = stage.canvas.height/1.9;
 
-    rulesBtn = new createjs.Bitmap("img/rules_btn.png");
+    var rulesBtn = new createjs.Bitmap("img/rules_btn.png");
     stage.addChild(rulesBtn);
     rulesBtn.x = stage.canvas.width/2.15;
     rulesBtn.y = stage.canvas.height/1.45;
@@ -87,10 +87,10 @@ function showTitle(s) {
         function(r){
             stage.removeChild(r.target);
             stage.removeChild(rulesBtn);
-            rulesView = new createjs.Bitmap("img/rules_bg.jpg");
+            var rulesView = new createjs.Bitmap("img/rules_bg.jpg");
             stage.addChild(rulesView);
 
-            backToStartBtn = new createjs.Bitmap("img/back_btn.png");
+            var backToStartBtn = new createjs.Bitmap("img/back_btn.png");
             stage.addChild(backToStartBtn);
             backToStartBtn.x = stage.canvas.width - 145;
             backToStartBtn.y = stage.canvas.height - 300;
@@ -117,6 +117,7 @@ function showTitle(s) {
 function startGame() {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", tock);
+
 }
 
 function tock (e) {
