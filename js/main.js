@@ -4,7 +4,9 @@
 var stage;
 var alertBg;
 var score;
-var energy = [];
+score = 0;
+var goodEnergy = [];
+var badEnergy = [];
 var lastEnergy;
 
 var energyX = [80, 198, 338, 70, 225, 376, 142, 356];
@@ -108,21 +110,62 @@ function showTitle(s) {
             stage.removeChild(titleView);
 
             gameIsRunning = true;
-            startGame();
+            showGame();
         });
 
     stage.update(s);
 }
 
+function showGame() {
+    // first Energy appears ///////////
+   // showEnergy();
+    score = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
+    score.x = score.y = 20;
+    stage.addChild(score);
+}
+
+function showEnergy() {
+    if (currentEnergies === totalEnergies){
+        showAlert();
+    } else {
+        if(lastEnergy != null)
+            {
+                lastEnergy.onPress = null;
+                stage.removeChild(lastEnergy);
+                stage.update();
+                lastEnergy = null;
+            }
+    }
+
+    goodEnergy.push("wind.svg");
+    badEnergy.push("coal.svg");
+
+    var randomPos = Math.floor(Math.random() * 8);
+    var energy = goodEnergy;
+
+    energy.x = energyX[randomPos];
+    energy.y = energyY[randomPos];
+    stage.addChild(energy);
+    energy.onPress = wormHit;
+
+    lastEnergy = energy;
+    lastEnergy.scaleY = 0.3;
+    lastEnergy.y +=42;
+    stage.update();
+
+   // Tween.get(lastEnergy).to({scaleY: 1, y: energyY[randomPos]}, 200).wait(1000).call(function(){currentEnergies++; showEnergy();
+   // });
+}
+
 function startGame() {
-    createjs.Ticker.setFPS(60);
-    createjs.Ticker.addEventListener("tick", tock);
+    //createjs.Ticker.setFPS(60);
+    //createjs.Ticker.addEventListener("tick", tock);
 
 }
 
 function tock (e) {
     if(gameIsRunning===true){
-        startGame();
+        //startGame();
     }
     stage.update(e);
 }
