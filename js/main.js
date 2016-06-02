@@ -7,7 +7,7 @@ var alertBg;
 var score;
 score = 0;
 var g,b;
-var clicks  = 10;
+var clicks  = 7;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
@@ -129,47 +129,57 @@ function showGame() {
 }
 
 function showEnergy() {
-    gRand = generateRandomNumber(7);
-    bRand = generateRandomNumber(7);
 
-    if (gRand === bRand) {
-        showEnergy();
-    }
+    if (gameIsRunning === true) {
 
-    else {
-        g = new createjs.Bitmap("img/wind.svg");
-        g.x = energyX[gRand];
-        g.y = energyY[gRand];
-        goodEnergy.push(g);
-        stage.addChild(g);
-        g.addEventListener('click', function(e){
-            console.log('good');
-            score++;
-            lostClick();
-            clearTimeout(timeOut);
-            stage.update();
-        });
+        gRand = generateRandomNumber(7);
+        bRand = generateRandomNumber(7);
+
+        if (gRand === bRand) {
+            showEnergy();
+        }
+
+        else {
+            g = new createjs.Bitmap("img/wind.svg");
+            g.x = energyX[gRand];
+            g.y = energyY[gRand];
+            if (gameIsRunning === true) {
+                goodEnergy.push(g);
+                stage.addChild(g);
+            }
+            g.addEventListener('click', function(e){
+                score++;
+                lostClick();
+                clearTimeout(timeOut);
+                stage.update();
+            });
 
 
-        b = new createjs.Bitmap("img/coal.svg");
-        badEnergy.push(b);
-        stage.addChild(b);
-        b.x = energyX[bRand];
-        b.y = energyY[bRand];
-        b.addEventListener('click', function(energyHit){
-            console.log('bad');
-            lostClick();
-            clearTimeout(timeOut);
-            stage.update();
-        });
+            b = new createjs.Bitmap("img/coal.svg");
+            if (gameIsRunning === true) {
+                badEnergy.push(b);
+                stage.addChild(b);
+            }
+            stage.addChild(b);
+            b.x = energyX[bRand];
+            b.y = energyY[bRand];
+            b.addEventListener('click', function(energyHit){
+                lostClick();
+                clearTimeout(timeOut);
+                stage.update();
+            });
 
-        var timeOut = setTimeout( function () {
-            lostClick();
-        }, 2000);
-    }
+            var timeOut = setTimeout( function () {
+                lostClick();
+            }, 2000);
+        }
 
-    if (clicks === 0){
-        showSummary();
+        if (clicks === 1){
+            gameEnded();
+        }
+
+    } else {
+        return;
     }
 }
 
@@ -177,17 +187,43 @@ function generateRandomNumber(max) {
     return Math.floor(Math.random() * max);
 }
 
-function showSummary() {
-    createjs.Ticker.removeAllListeners();
-    stage.update();
-
-}
-
 function lostClick() {
     clicks--;
     scoreText.text=score + '/' + totalEnergies + " energies";
-    stage.removeChild(g, b);
+    if (clicks !== 0) {
+        stage.removeChild(g, b);
+    }
     showEnergy();
+}
+
+function gameEnded() {
+    gameIsRunning = false;
+    overlay = new createjs.Shape();
+    overlay.graphics.beginFill('#424242').drawRect(0, 0, 200, 200);
+    overlay.width = 200;
+    overlay.height = 200;
+    overlay.alpha = 0.5;
+    overlay.x = stage.canvas.width / 2 - overlay.width / 2;
+    overlay.y = stage.canvas.height / 2 - overlay.height / 2;
+    stage.addChild(overlay);
+    b.removeEventListener();
+    g.removeEventListener();
+
+//text "Game Over"
+    scoreText.regX = 0.5;
+    scoreText.regY = 0.5;
+    scoreText.x = stage.canvas.width / 2 - 70;
+    scoreText.y = stage.canvas.height / 2;
+
+    var tryAgain = new createjs.Bitmap("img/try_again.svg");
+    stage.addChild(tryAgain);
+    tryAgain.addEventListener('click', function (e) {
+        gameReset();
+    });
+}
+
+function gameReset() {
+
 }
 
 function tock(e) {
