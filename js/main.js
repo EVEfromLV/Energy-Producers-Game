@@ -5,7 +5,7 @@ var stage;
 var alertBg;
 var score;
 score = 0;
-var clicks  = 15;
+var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
@@ -128,7 +128,6 @@ function showGame() {
 }
 
 function showEnergy() {
-    var lastG = g;
     var g,b;
     var randomPos = Math.floor(Math.random() * 7);
     g = new createjs.Bitmap("img/wind.svg");
@@ -154,7 +153,6 @@ function showEnergy() {
     b.y = energyY[randomPos];
     b.addEventListener('click', function(energyHit){
         console.log('bad');
-        score--;
         clicks--;
         scoreText.text=score + '/' + totalEnergies + " energies";
         stage.removeChild(b, g);
