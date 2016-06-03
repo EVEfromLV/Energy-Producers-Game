@@ -61,7 +61,9 @@ function preLoad(){
         "img/start_bg.jpg",
         "img/start_btn.png",
         "img/rules_btn.png",
-        "img/preload_bg.jpg"
+        "img/preload_bg.jpg",
+        "img/pdf.svg",
+        "img/github.svg",
         // audio also goes in
     ])
 }
@@ -110,7 +112,29 @@ function showTitle(s) {
             backToStartBtn.addEventListener('click',
                 function(b){
                     stage.removeChild(b.target);
+                    stage.removeChild(gitHubBtn);
+                    stage.removeChild(pdfBBtn);
                     stage.removeChild(rulesView);
+                });
+
+            var gitHubBtn = new createjs.Bitmap("img/github.svg");
+            stage.addChild(gitHubBtn);
+            gitHubBtn.x = 640;
+            gitHubBtn.y = 520;
+
+            gitHubBtn.addEventListener('click',
+                function(){
+                    window.open("https://github.com/EVEfromLV/Energy-Producers-Game");
+                });
+
+            var pdfBBtn = new createjs.Bitmap("img/pdf.svg");
+            stage.addChild(pdfBBtn);
+            pdfBBtn.x = 700;
+            pdfBBtn.y = 520;
+
+            pdfBBtn.addEventListener('click',
+                function(p){
+                    window.open("http://evecreative.net/exercises/whack-that-energy-report.pdf");
                 });
         });
 
