@@ -244,16 +244,16 @@ function gameEnded() {
         b.removeEventListener();
         g.removeEventListener();
 
-        reward = new createjs.Bitmap("img/next_level_bg.png");
+        reward = new createjs.Bitmap("img/next_level_bg.svg");
         reward.width = 800;
-        reward.height = 300;
+        reward.height = 365;
         reward.x = stage.canvas.width / 2 - reward.width / 2;
         reward.y = stage.canvas.height / 2 - reward.height / 2 - 60;
         stage.addChild(reward);
 
         nextLevelBtn = new createjs.Bitmap("img/next_level.png");
         nextLevelBtn.x = stage.canvas.width / 2 - 270;
-        nextLevelBtn.y = stage.canvas.height / 2 + 120;
+        nextLevelBtn.y = stage.canvas.height / 2 + 140;
         stage.addChild(nextLevelBtn);
         nextLevelBtn.addEventListener('click', function (e) {
             console.log("Next Level starts");
