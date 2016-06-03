@@ -224,6 +224,7 @@ function lostClick() {
 }
 
 function gameEnded() {
+    gameIsRunning = false;
 
     ///////////////////// remember to change back "to >5" ///////////////
     if (score > 2) {
@@ -278,6 +279,9 @@ function gameEnded() {
         tryAgain.y = stage.canvas.height / 2 + 10;
         stage.addChild(tryAgain);
         tryAgain.addEventListener('click', function (e) {
+            stage.removeChild(overlay);
+            stage.removeChild(gameOver);
+            stage.removeChild(tryAgain);
             gameReset();
         });
 
@@ -288,7 +292,6 @@ function gameEnded() {
 
         gotReward = false;
     }
-    gameIsRunning = false;
 }
 
 function gameReset() {
