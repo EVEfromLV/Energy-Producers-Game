@@ -226,8 +226,7 @@ function lostClick() {
 function gameEnded() {
     gameIsRunning = false;
 
-    ///////////////////// remember to change back "to >5" ///////////////
-    if (score > 2) {
+    if (score > 6) {
         clearTimeout(timeOut);
         stage.removeChild(b);
         stage.removeChild(g);
