@@ -3,13 +3,14 @@
  */
 
 var stage;
-var alertBg;
 var score;
 score = 0;
 var g,b;
 var overlay;
+var gameOver;
 var tryAgain;
-var gameTime;
+var nextLevelBtn;
+var timeOut;
 var reward;
 var globalTimer = 1200;
 var gotReward;
@@ -17,7 +18,6 @@ var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
-var lastEnergy;
 
 var energyX = [210, 105, 340, 210, 520, 583, 659];
 var energyY = [65, 235, 170, 425, 115, 418, 241];
@@ -26,9 +26,6 @@ var queue;
 var preLoadText;
 var gameIsRunning = false;
 
-var timerSource;
-var currentEnergies = 0;
-var energiesHit = 0;
 var totalEnergies = 10;
 
 
@@ -64,6 +61,7 @@ function preLoad(){
         "img/preload_bg.jpg",
         "img/pdf.svg",
         "img/github.svg",
+        "img/game_over.svg"
         // audio also goes in
     ])
 }
@@ -198,7 +196,7 @@ function showEnergy() {
                 stage.update();
             });
 
-            var timeOut = setTimeout( function () {
+            timeOut = setTimeout( function () {
                 lostClick();
             }, 2000);
         }
@@ -227,45 +225,73 @@ function lostClick() {
 
 function gameEnded() {
 
+    ///////////////////// remember to change back "to >5" ///////////////
     if (score > 2) {
-        reward = new createjs.Bitmap("img/nuclear.svg");
-        reward.width = 200;
-        reward.height = 50;
+        clearTimeout(timeOut);
+        stage.removeChild(b);
+        stage.removeChild(g);
+        stage.removeChild(gameOver);
+        stage.removeChild(tryAgain);
+
+        overlay = new createjs.Shape();
+        overlay.graphics.beginFill('black').drawRect(0, 0, 800, 500);
+        overlay.width = 800;
+        overlay.height = 500;
+        overlay.alpha = 0.4;
+        overlay.x = stage.canvas.width / 2 - overlay.width / 2;
+        overlay.y = stage.canvas.height / 2 - overlay.height / 2 + 10;
+        stage.addChild(overlay);
+        b.removeEventListener();
+        g.removeEventListener();
+
+        reward = new createjs.Bitmap("img/next_level_bg.png");
+        reward.width = 800;
+        reward.height = 300;
         reward.x = stage.canvas.width / 2 - reward.width / 2;
-        reward.y = stage.canvas.height / 2 - reward.height / 2;
+        reward.y = stage.canvas.height / 2 - reward.height / 2 - 60;
         stage.addChild(reward);
+
+        nextLevelBtn = new createjs.Bitmap("img/next_level.png");
+        nextLevelBtn.x = stage.canvas.width / 2 - 270;
+        nextLevelBtn.y = stage.canvas.height / 2 + 120;
+        stage.addChild(nextLevelBtn);
+        nextLevelBtn.addEventListener('click', function (e) {
+            console.log("Next Level starts");
+        });
+
         gotReward = true;
+
     } else {
+        overlay = new createjs.Shape();
+        overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
+        overlay.width = 800;
+        overlay.height = 300;
+        overlay.alpha = 0.4;
+        overlay.x = stage.canvas.width / 2 - overlay.width / 2;
+        overlay.y = stage.canvas.height / 2 - overlay.height / 2;
+        stage.addChild(overlay);
+        b.removeEventListener();
+        g.removeEventListener();
+
+        tryAgain = new createjs.Bitmap("img/try_again.svg");
+        tryAgain.x = stage.canvas.width / 2 - 90;
+        tryAgain.y = stage.canvas.height / 2 + 10;
+        stage.addChild(tryAgain);
+        tryAgain.addEventListener('click', function (e) {
+            gameReset();
+        });
+
+        gameOver = new createjs.Bitmap("img/game_over.svg");
+        gameOver.x = 90;
+        gameOver.y = 220;
+        stage.addChild(gameOver);
+
         gotReward = false;
     }
-
     gameIsRunning = false;
-    overlay = new createjs.Shape();
-    overlay.graphics.beginFill('#424242').drawRect(0, 0, 200, 200);
-    overlay.width = 200;
-    overlay.height = 200;
-    overlay.alpha = 0.5;
-    overlay.x = stage.canvas.width / 2 - overlay.width / 2;
-    overlay.y = stage.canvas.height / 2 - overlay.height / 2;
-    stage.addChild(overlay);
-    b.removeEventListener();
-    g.removeEventListener();
-
-//text "Game Over"
-    scoreText.regX = 0.5;
-    scoreText.regY = 0.5;
-    scoreText.x = stage.canvas.width / 2 - 70;
-    scoreText.y = stage.canvas.height / 2;
-
-    tryAgain = new createjs.Bitmap("img/try_again.svg");
-    stage.addChild(tryAgain);
-    tryAgain.addEventListener('click', function (e) {
-        gameReset();
-    });
 }
 
 function gameReset() {
-    console.log("gameReset");
     gameIsRunning = true;
     globalTimer = 1200;
     score = 0;
@@ -273,10 +299,11 @@ function gameReset() {
     scoreText.x = scoreText.y = 20;
     goodEnergy = [];
     badEnergy = [];
-    clearTimeout(gameTime);
+    clearTimeout(timeOut);
     stage.removeChild(b);
     stage.removeChild(g);
     stage.removeChild(overlay);
+    stage.removeChild(gameOver);
     stage.removeChild(tryAgain);
     if (gotReward === true) {
         stage.removeChild(reward);
@@ -289,7 +316,6 @@ function tock(e) {
     stage.update(e);
 
     if (gameIsRunning) {
-        console.log(globalTimer);
         globalTimer--;
 
         if (globalTimer === 0) {
