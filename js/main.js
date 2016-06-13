@@ -25,47 +25,53 @@ var currentLevel = 1;
 
 var levels = [
     {
-        clicks: 2,
-        globalTimer: 20,
+        clicks: 10,
+        globalTimer: 10,
         requiredClicks: 0,
         timeToClick: 3000,
         good:'wind2',
-        bad:'coal2'
+        bad:'coal2',
+        nextLevel:'second_level_bg'
     }, {
-        clicks: 3,
-        globalTimer: 20,
-        requiredClicks: 1,
+        clicks: 10,
+        globalTimer: 15,
+        requiredClicks: 2,
         timeToClick: 2000,
         good:'geothermal2',
-        bad:''
+        bad:'',
+        nextLevel:'third_level_bg'
     }, {
-        clicks: 4,
+        clicks: 10,
         globalTimer: 20,
-        requiredClicks: 1,
+        requiredClicks: 3,
         timeToClick: 2000,
         good:'biofuel2',
-        bad:'nuclear2'
+        bad:'nuclear2',
+        nextLevel:'fourth_level_bg'
     }, {
-        clicks: 5,
-        globalTimer: 20,
-        requiredClicks: 2,
+        clicks: 10,
+        globalTimer: 25,
+        requiredClicks: 4,
         timeToClick: 2000,
         good:'hydro2',
-        bad:''
+        bad:'',
+        nextLevel:'fifth_level_bg'
     }, {
-        clicks: 6,
-        globalTimer: 20,
-        requiredClicks: 2,
-        timeToClick: 2000,
-        good:'naturalGas2',
-        bad:'fuel2'
-    }, {
-        clicks: 7,
-        globalTimer: 45,
+        clicks: 10,
+        globalTimer: 30,
         requiredClicks: 5,
         timeToClick: 2000,
+        good:'naturalGas2',
+        bad:'fuel2',
+        nextLevel:'sixth_level_bg'
+    }, {
+        clicks: 10,
+        globalTimer: 45,
+        requiredClicks: 6,
+        timeToClick: 2000,
         good:'solar2',
-        bad:''
+        bad:'',
+        nextLevel:''
     }
 ];
 
@@ -112,10 +118,17 @@ function preLoad(){
         "img/start_bg.jpg",
         "img/start_btn.png",
         "img/rules_btn.png",
+        "img/rules_bg.jpg",
         "img/preload_bg.jpg",
         "img/pdf.svg",
         "img/github.svg",
-        "img/game_over.svg"
+        "img/game_over.svg",
+        "img/second_level_bg.svg",
+        "img/third_level_bg.svg",
+        "img/fourth_level_bg.svg",
+        "img/fifth_level_bg.svg",
+        "img/sixth_level_bg.svg",
+        "img/final_level_bg.svg"
         // audio also goes in
     ])
 }
@@ -132,15 +145,15 @@ function showTitle(s) {
     var gameBg = new createjs.Bitmap(queue.getResult("img/bg.jpg"));
     stage.addChild(gameBg);
 
-    var titleBg = new createjs.Bitmap("img/start_bg.jpg");
+    var titleBg = new createjs.Bitmap(queue.getResult("img/start_bg.jpg"));
     stage.addChild(titleBg);
 
-    var startBtn = new createjs.Bitmap("img/start_btn.png");
+    var startBtn = new createjs.Bitmap(queue.getResult("img/start_btn.png"));
     stage.addChild(startBtn);
     startBtn.x = stage.canvas.width/2.9;
     startBtn.y = stage.canvas.height/1.9;
 
-    var rulesBtn = new createjs.Bitmap("img/rules_btn.png");
+    var rulesBtn = new createjs.Bitmap(queue.getResult("img/rules_btn.png"));
     stage.addChild(rulesBtn);
     rulesBtn.x = stage.canvas.width/2.15;
     rulesBtn.y = stage.canvas.height/1.45;
@@ -153,10 +166,10 @@ function showTitle(s) {
         function(r){
             stage.removeChild(r.target);
             stage.removeChild(rulesBtn);
-            var rulesView = new createjs.Bitmap("img/rules_bg.jpg");
+            var rulesView = new createjs.Bitmap(queue.getResult("img/rules_bg.jpg"));
             stage.addChild(rulesView);
 
-            var backToStartBtn = new createjs.Bitmap("img/back_btn.png");
+            var backToStartBtn = new createjs.Bitmap(queue.getResult("img/back_btn.png"));
             stage.addChild(backToStartBtn);
             backToStartBtn.x = stage.canvas.width - 145;
             backToStartBtn.y = stage.canvas.height - 300;
@@ -169,7 +182,7 @@ function showTitle(s) {
                     stage.removeChild(rulesView);
                 });
 
-            var gitHubBtn = new createjs.Bitmap("img/github.svg");
+            var gitHubBtn = new createjs.Bitmap(queue.getResult("img/github.svg"));
             stage.addChild(gitHubBtn);
             gitHubBtn.x = 640;
             gitHubBtn.y = 520;
@@ -179,13 +192,13 @@ function showTitle(s) {
                     window.open("https://github.com/EVEfromLV/Energy-Producers-Game");
                 });
 
-            var pdfBBtn = new createjs.Bitmap("img/pdf.svg");
+            var pdfBBtn = new createjs.Bitmap(queue.getResult("img/pdf.svg"));
             stage.addChild(pdfBBtn);
             pdfBBtn.x = 700;
             pdfBBtn.y = 520;
 
             pdfBBtn.addEventListener('click',
-                function(p){
+                function(){
                     window.open("http://evecreative.net/exercises/whack-that-energy-report.pdf");
                 });
         });
@@ -239,18 +252,11 @@ function showEnergy() {
         }
 
         else {
-
-            // If level 2 --> random (1 - 2)
-            // 1 --> Nuclear
-            // 2 --> geoThermal
-
-            //Push the result to array
             var r = Math.floor(Math.random()*goodEnergy.length);
             g = new createjs.Bitmap("img/"+goodEnergy[r]+".svg");
             g.x = energyX[gRand];
             g.y = energyY[gRand];
             if (gameIsRunning === true) {
-                //goodEnergy.push(g);
                 stage.addChild(g);
             }
             g.addEventListener('click', function(e){
@@ -262,13 +268,12 @@ function showEnergy() {
             r = Math.floor(Math.random()*badEnergy.length);
             b = new createjs.Bitmap("img/"+badEnergy[r]+".svg");
             if (gameIsRunning === true) {
-                //badEnergy.push(b);
                 stage.addChild(b);
             }
             stage.addChild(b);
             b.x = energyX[bRand];
             b.y = energyY[bRand];
-            b.addEventListener('click', function(energyHit){
+            b.addEventListener('click', function(){
                 lostClick();
                 stage.update();
             });
@@ -319,12 +324,11 @@ function levelWon() {
 
     else {
 
-        //you define all these (SCREENS) somewhere else
+        //define all these (SCREENS) somewhere else
         //If level ==
 
         clearInterval(timeOut);
-        stage.removeChild(b);
-        stage.removeChild(g);
+        stage.removeChild(b,g);
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
 
@@ -339,7 +343,7 @@ function levelWon() {
         b.removeEventListener();
         g.removeEventListener();
 
-        reward = new createjs.Bitmap("img/next_level_bg.svg");
+        reward = new createjs.Bitmap("img/"+levels[currentLevel-1].nextLevel+".svg");
         reward.width = 800;
         reward.height = 365;
         reward.x = stage.canvas.width / 2 - reward.width / 2;
@@ -424,9 +428,7 @@ function gameReset() {
     if(levels[currentLevel-1].bad){
         badEnergy.push(levels[currentLevel-1].bad);
     }
-    console.log(goodEnergy, badEnergy)
-    //goodEnergy = [];
-    //badEnergy = [];
+    console.log(goodEnergy, badEnergy);
     clearInterval(timeOut);
     stage.removeChild(overlay);
     stage.removeChild(gameOver);
