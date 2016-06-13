@@ -389,6 +389,8 @@ function levelLost() {
     tryAgain.y = stage.canvas.height / 2 + 10;
     stage.addChild(tryAgain);
     tryAgain.addEventListener('click', function () {
+        goodEnergy.splice(levels[currentLevel-1].good);
+        badEnergy.splice(levels[currentLevel-1].bad);
         stage.removeChild(overlay);
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
