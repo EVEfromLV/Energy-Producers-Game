@@ -18,9 +18,59 @@ var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
+var finalLevelText;
 
-var energyX = [210, 105, 340, 210, 520, 583, 659];
-var energyY = [65, 235, 170, 425, 115, 418, 241];
+
+var currentLevel = 1;
+
+var levels = [
+    {
+        clicks: 2,
+        globalTimer: 20,
+        requiredClicks: 0,
+        timeToClick: 3000,
+        good:'wind2',
+        bad:'coal2'
+    }, {
+        clicks: 3,
+        globalTimer: 20,
+        requiredClicks: 1,
+        timeToClick: 2000,
+        good:'geothermal2',
+        bad:''
+    }, {
+        clicks: 4,
+        globalTimer: 20,
+        requiredClicks: 1,
+        timeToClick: 2000,
+        good:'biofuel2',
+        bad:'nuclear2'
+    }, {
+        clicks: 5,
+        globalTimer: 20,
+        requiredClicks: 2,
+        timeToClick: 2000,
+        good:'hydro2',
+        bad:''
+    }, {
+        clicks: 6,
+        globalTimer: 20,
+        requiredClicks: 2,
+        timeToClick: 2000,
+        good:'naturalGas2',
+        bad:'fuel2'
+    }, {
+        clicks: 7,
+        globalTimer: 45,
+        requiredClicks: 5,
+        timeToClick: 2000,
+        good:'solar2',
+        bad:''
+    }
+];
+
+var energyX = [199, 94, 331, 198, 509, 572, 648];
+var energyY = [58, 225, 162, 415, 106, 412, 235];
 
 var queue;
 var preLoadText;
@@ -28,6 +78,10 @@ var gameIsRunning = false;
 
 var totalEnergies = 10;
 
+function convertTimeToSeconds(time) {
+
+    return time*60;
+}
 
 function preLoad(){
     stage = new createjs.Stage("WhackField");
@@ -45,15 +99,15 @@ function preLoad(){
     queue.on("complete", showTitle);
 
     queue.loadManifest([
-        "img/biofuel.svg",
-        "img/coal.svg",
-        "img/fuel.svg",
-        "img/geothermal.svg",
-        "img/hydro.svg",
-        "img/naturalGas.svg",
-        "img/nuclear.svg",
-        "img/solar.svg",
-        "img/wind.svg",
+        "img/biofuel2.svg",
+        "img/coal2.svg",
+        "img/fuel2.svg",
+        "img/geothermal2.svg",
+        "img/hydro2.svg",
+        "img/naturalGas2.svg",
+        "img/nuclear2.svg",
+        "img/solar2.svg",
+        "img/wind2.svg",
         "img/bg.jpg",
         "img/start_bg.jpg",
         "img/start_btn.png",
@@ -75,7 +129,7 @@ function showTitle(s) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", tock);
 
-    var gameBg = new createjs.Bitmap("img/bg.jpg");
+    var gameBg = new createjs.Bitmap(queue.getResult("img/bg.jpg"));
     stage.addChild(gameBg);
 
     var titleBg = new createjs.Bitmap("img/start_bg.jpg");
@@ -149,6 +203,17 @@ function showTitle(s) {
 }
 
 function showGame() {
+    if(levels[currentLevel-1].good){
+        goodEnergy.push(levels[currentLevel-1].good);
+    }
+    if(levels[currentLevel-1].bad){
+        badEnergy.push(levels[currentLevel-1].bad);
+    }
+    globalTimer = convertTimeToSeconds(levels[currentLevel - 1].globalTimer);
+    clicks = levels[currentLevel - 1].clicks;
+    console.log(globalTimer);
+    console.log(clicks);
+
     // first Energy appears ///////////
     scoreText = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
     scoreText.x = scoreText.y = 20;
@@ -157,6 +222,12 @@ function showGame() {
 }
 
 function showEnergy() {
+
+    console.log("current level " + currentLevel);
+    console.log("currentLevel clicks " + clicks);
+    console.log("currentLevel globalTimer " + globalTimer);
+
+    clearInterval(timeOut);
 
     if (gameIsRunning === true) {
 
@@ -168,23 +239,30 @@ function showEnergy() {
         }
 
         else {
-            g = new createjs.Bitmap("img/wind.svg");
+
+            // If level 2 --> random (1 - 2)
+            // 1 --> Nuclear
+            // 2 --> geoThermal
+
+            //Push the result to array
+            var r = Math.floor(Math.random()*goodEnergy.length);
+            g = new createjs.Bitmap("img/"+goodEnergy[r]+".svg");
             g.x = energyX[gRand];
             g.y = energyY[gRand];
             if (gameIsRunning === true) {
-                goodEnergy.push(g);
+                //goodEnergy.push(g);
                 stage.addChild(g);
             }
             g.addEventListener('click', function(e){
                 score++;
                 lostClick();
-                clearTimeout(timeOut);
                 stage.update();
             });
 
-            b = new createjs.Bitmap("img/coal.svg");
+            r = Math.floor(Math.random()*badEnergy.length);
+            b = new createjs.Bitmap("img/"+badEnergy[r]+".svg");
             if (gameIsRunning === true) {
-                badEnergy.push(b);
+                //badEnergy.push(b);
                 stage.addChild(b);
             }
             stage.addChild(b);
@@ -192,17 +270,12 @@ function showEnergy() {
             b.y = energyY[bRand];
             b.addEventListener('click', function(energyHit){
                 lostClick();
-                clearTimeout(timeOut);
                 stage.update();
             });
 
-            timeOut = setTimeout( function () {
+            timeOut = setInterval( function () {
                 lostClick();
             }, 2000);
-        }
-
-        if (clicks === 1){
-            gameEnded();
         }
 
     } else {
@@ -216,18 +289,40 @@ function generateRandomNumber(max) {
 
 function lostClick() {
     clicks--;
-    scoreText.text=score + '/' + totalEnergies + " energies";
-    if (clicks !== 0) {
-        stage.removeChild(g, b);
+    if (clicks === 0) {gameEnded()}
+    else {
+        scoreText.text = score + '/' + totalEnergies + " energies";
+        if (clicks !== 0) {
+            stage.removeChild(g, b);
+        }
+        showEnergy();
     }
-    showEnergy();
 }
 
 function gameEnded() {
     gameIsRunning = false;
 
-    if (score > 6) {
-        clearTimeout(timeOut);
+    if (score > levels[currentLevel - 1].requiredClicks) {
+
+        levelWon();
+
+    } else {
+        levelLost();
+    }
+}
+
+function levelWon() {
+
+    if (currentLevel === 6) {
+        reachedFinalLevel();
+    }
+
+    else {
+
+        //you define all these (SCREENS) somewhere else
+        //If level ==
+
+        clearInterval(timeOut);
         stage.removeChild(b);
         stage.removeChild(g);
         stage.removeChild(gameOver);
@@ -256,61 +351,90 @@ function gameEnded() {
         nextLevelBtn.y = stage.canvas.height / 2 + 140;
         stage.addChild(nextLevelBtn);
         nextLevelBtn.addEventListener('click', function (e) {
-            console.log("Next Level starts");
-        });
-
-        gotReward = true;
-
-    } else {
-        overlay = new createjs.Shape();
-        overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
-        overlay.width = 800;
-        overlay.height = 300;
-        overlay.alpha = 0.4;
-        overlay.x = stage.canvas.width / 2 - overlay.width / 2;
-        overlay.y = stage.canvas.height / 2 - overlay.height / 2;
-        stage.addChild(overlay);
-        b.removeEventListener();
-        g.removeEventListener();
-
-        tryAgain = new createjs.Bitmap("img/try_again.svg");
-        tryAgain.x = stage.canvas.width / 2 - 90;
-        tryAgain.y = stage.canvas.height / 2 + 10;
-        stage.addChild(tryAgain);
-        tryAgain.addEventListener('click', function (e) {
-            stage.removeChild(overlay);
-            stage.removeChild(gameOver);
-            stage.removeChild(tryAgain);
+            currentLevel++;
+            console.log("nextLevel btn clicked");
+            stage.removeChild(reward, nextLevelBtn, scoreText);
+            scoreText = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
+            scoreText.x = scoreText.y = 20;
+            stage.addChild(scoreText);
+            stage.removeChild(g);
+            stage.removeChild(b);
             gameReset();
         });
 
-        gameOver = new createjs.Bitmap("img/game_over.svg");
-        gameOver.x = 90;
-        gameOver.y = 220;
-        stage.addChild(gameOver);
-
-        gotReward = false;
+        gotReward = true;
     }
 }
 
-function gameReset() {
-    gameIsRunning = true;
-    globalTimer = 1200;
-    score = 0;
-    clicks = 10;
-    scoreText.x = scoreText.y = 20;
-    goodEnergy = [];
-    badEnergy = [];
-    clearTimeout(timeOut);
-    stage.removeChild(b);
+function levelLost() {
+    overlay = new createjs.Shape();
+    overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
+    overlay.width = 800;
+    overlay.height = 300;
+    overlay.alpha = 0.4;
+    overlay.x = stage.canvas.width / 2 - overlay.width / 2;
+    overlay.y = stage.canvas.height / 2 - overlay.height / 2;
+    stage.addChild(overlay);
     stage.removeChild(g);
+    stage.removeChild(b);
+    b.removeEventListener();
+    g.removeEventListener();
+
+    tryAgain = new createjs.Bitmap("img/try_again.svg");
+    tryAgain.x = stage.canvas.width / 2 - 90;
+    tryAgain.y = stage.canvas.height / 2 + 10;
+    stage.addChild(tryAgain);
+    tryAgain.addEventListener('click', function (e) {
+        stage.removeChild(overlay);
+        stage.removeChild(gameOver);
+        stage.removeChild(tryAgain);
+        gameReset();
+    });
+
+    gameOver = new createjs.Bitmap("img/game_over.svg");
+    gameOver.x = 90;
+    gameOver.y = 220;
+    stage.addChild(gameOver);
+
+    gotReward = false;
+}
+
+function reachedFinalLevel() {
+    console.log("Reached final level");
+    finalLevelText = new createjs.Text('You reached the final level', '20px Verdana', 'white');
+    stage.addChild(finalLevelText);
+    stage.removeChild(overlay);
+    stage.removeChild(gameOver);
+    stage.removeChild(tryAgain);
+    stage.removeChild(scoreText);
+    stage.removeChild(g);
+    stage.removeChild(b);
+}
+
+function gameReset() {
+
+    console.log("gameReset ran");
+    globalTimer = convertTimeToSeconds(levels[currentLevel - 1].globalTimer);
+    clicks = levels[currentLevel - 1].clicks;
+    score = 0;
+    scoreText.x = scoreText.y = 20;
+    if(levels[currentLevel-1].good){
+        goodEnergy.push(levels[currentLevel-1].good);
+    }
+    if(levels[currentLevel-1].bad){
+        badEnergy.push(levels[currentLevel-1].bad);
+    }
+    console.log(goodEnergy, badEnergy)
+    //goodEnergy = [];
+    //badEnergy = [];
+    clearInterval(timeOut);
     stage.removeChild(overlay);
     stage.removeChild(gameOver);
     stage.removeChild(tryAgain);
     if (gotReward === true) {
         stage.removeChild(reward);
     }
-
+    gameIsRunning = true;
     showEnergy();
 }
 
