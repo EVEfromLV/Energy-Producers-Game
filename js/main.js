@@ -259,7 +259,7 @@ function showEnergy() {
             if (gameIsRunning === true) {
                 stage.addChild(g);
             }
-            g.addEventListener('click', function(e){
+            g.addEventListener('click', function(){
                 score++;
                 lostClick();
                 stage.update();
@@ -354,7 +354,7 @@ function levelWon() {
         nextLevelBtn.x = stage.canvas.width / 2 - 270;
         nextLevelBtn.y = stage.canvas.height / 2 + 140;
         stage.addChild(nextLevelBtn);
-        nextLevelBtn.addEventListener('click', function (e) {
+        nextLevelBtn.addEventListener('click', function () {
             currentLevel++;
             console.log("nextLevel btn clicked");
             stage.removeChild(reward, nextLevelBtn, scoreText);
@@ -388,7 +388,7 @@ function levelLost() {
     tryAgain.x = stage.canvas.width / 2 - 90;
     tryAgain.y = stage.canvas.height / 2 + 10;
     stage.addChild(tryAgain);
-    tryAgain.addEventListener('click', function (e) {
+    tryAgain.addEventListener('click', function () {
         stage.removeChild(overlay);
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
