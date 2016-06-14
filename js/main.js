@@ -27,7 +27,7 @@ var levels = [
     {
         clicks: 10,
         globalTimer: 10,
-        requiredClicks: 0,
+        requiredClicks: 1,
         timeToClick: 3000,
         good:'wind2',
         bad:'coal2',
@@ -123,6 +123,8 @@ function preLoad(){
         "img/pdf.svg",
         "img/github.svg",
         "img/game_over.svg",
+        "img/try_again.svg",
+        "img/next_level.png",
         "img/second_level_bg.svg",
         "img/third_level_bg.svg",
         "img/fourth_level_bg.svg",
@@ -294,8 +296,9 @@ function generateRandomNumber(max) {
 
 function lostClick() {
     clicks--;
-    if (clicks === 0) {gameEnded()}
-    else {
+    if (clicks === 0) {
+        gameEnded();
+    } else {
         scoreText.text = score + '/' + totalEnergies + " energies";
         if (clicks !== 0) {
             stage.removeChild(g, b);
@@ -350,7 +353,7 @@ function levelWon() {
         reward.y = stage.canvas.height / 2 - reward.height / 2 - 60;
         stage.addChild(reward);
 
-        nextLevelBtn = new createjs.Bitmap("img/next_level.png");
+        nextLevelBtn = new createjs.Bitmap(queue.getResult("img/next_level.png"));
         nextLevelBtn.x = stage.canvas.width / 2 - 270;
         nextLevelBtn.y = stage.canvas.height / 2 + 140;
         stage.addChild(nextLevelBtn);
