@@ -27,7 +27,7 @@ var levels = [
     {
         clicks: 10,
         globalTimer: 10,
-        requiredClicks: 1,
+        requiredClicks: 8,
         timeToClick: 3000,
         good:'wind2',
         bad:'coal2',
@@ -35,7 +35,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 15,
-        requiredClicks: 2,
+        requiredClicks: 9,
         timeToClick: 2000,
         good:'geothermal2',
         bad:'',
@@ -43,7 +43,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 20,
-        requiredClicks: 3,
+        requiredClicks: 8,
         timeToClick: 2000,
         good:'biofuel2',
         bad:'nuclear2',
@@ -51,7 +51,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 25,
-        requiredClicks: 4,
+        requiredClicks: 8,
         timeToClick: 2000,
         good:'hydro2',
         bad:'',
@@ -59,7 +59,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 30,
-        requiredClicks: 5,
+        requiredClicks:9,
         timeToClick: 2000,
         good:'naturalGas2',
         bad:'fuel2',
@@ -67,7 +67,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 45,
-        requiredClicks: 6,
+        requiredClicks: 10,
         timeToClick: 2000,
         good:'solar2',
         bad:'',
@@ -101,6 +101,7 @@ function preLoad(){
     preLoadText.y = stage.canvas.height/1.8;
 
     queue = new createjs.LoadQueue(true);
+    queue.installPlugin(createjs.Sound);
     queue.on("progress", progressIs);
     queue.on("complete", showTitle);
 
@@ -119,6 +120,7 @@ function preLoad(){
         "img/start_btn.png",
         "img/rules_btn.png",
         "img/rules_bg.jpg",
+        "img/back_btn.png",
         "img/preload_bg.jpg",
         "img/pdf.svg",
         "img/github.svg",
@@ -130,8 +132,10 @@ function preLoad(){
         "img/fourth_level_bg.svg",
         "img/fifth_level_bg.svg",
         "img/sixth_level_bg.svg",
-        "img/final_level_bg.svg"
-        // audio also goes in
+        "img/final_level_bg.svg",
+
+        {id: "goodHit", src:"sound/switch.mp3"},
+        {id: "badHit", src:"sound/breaking.mp3"}
     ])
 }
 
@@ -229,7 +233,6 @@ function showGame() {
     console.log(globalTimer);
     console.log(clicks);
 
-    // first Energy appears ///////////
     scoreText = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
     scoreText.x = scoreText.y = 20;
     stage.addChild(scoreText);
@@ -262,6 +265,9 @@ function showEnergy() {
                 stage.addChild(g);
             }
             g.addEventListener('click', function(){
+                var goodHit = new createjs.Sound.play("goodHit");
+                goodHit.setVolume(0.8);
+
                 score++;
                 lostClick();
                 stage.update();
@@ -276,6 +282,9 @@ function showEnergy() {
             b.x = energyX[bRand];
             b.y = energyY[bRand];
             b.addEventListener('click', function(){
+                var badHit = new createjs.Sound.play("badHit");
+                badHit.setVolume(0.3);
+
                 lostClick();
                 stage.update();
             });
@@ -326,10 +335,6 @@ function levelWon() {
     }
 
     else {
-
-        //define all these (SCREENS) somewhere else
-        //If level ==
-
         clearInterval(timeOut);
         stage.removeChild(b,g);
         stage.removeChild(gameOver);
@@ -387,6 +392,11 @@ function levelLost() {
     b.removeEventListener();
     g.removeEventListener();
 
+    gameOver = new createjs.Bitmap("img/game_over.svg");
+    gameOver.x = 90;
+    gameOver.y = 220;
+    stage.addChild(gameOver);
+
     tryAgain = new createjs.Bitmap("img/try_again.svg");
     tryAgain.x = stage.canvas.width / 2 - 90;
     tryAgain.y = stage.canvas.height / 2 + 10;
@@ -399,11 +409,6 @@ function levelLost() {
         stage.removeChild(tryAgain);
         gameReset();
     });
-
-    gameOver = new createjs.Bitmap("img/game_over.svg");
-    gameOver.x = 90;
-    gameOver.y = 220;
-    stage.addChild(gameOver);
 
     gotReward = false;
 }
@@ -423,6 +428,7 @@ function reachedFinalLevel() {
 function gameReset() {
 
     console.log("gameReset ran");
+
     globalTimer = convertTimeToSeconds(levels[currentLevel - 1].globalTimer);
     clicks = levels[currentLevel - 1].clicks;
     score = 0;
@@ -452,6 +458,9 @@ function tock(e) {
         globalTimer--;
 
         if (globalTimer === 0) {
+            stage.removeChild(overlay);
+            stage.removeChild(gameOver);
+            stage.removeChild(tryAgain);
             gameEnded();
         }
     }
