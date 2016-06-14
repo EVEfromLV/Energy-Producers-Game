@@ -265,7 +265,7 @@ function showEnergy() {
                 stage.addChild(g);
             }
             g.addEventListener('click', function(){
-                var goodHit = new createjs.Sound.play("goodHit");
+                var goodHit = createjs.Sound.play("goodHit");
                 goodHit.setVolume(0.8);
 
                 score++;
@@ -282,7 +282,7 @@ function showEnergy() {
             b.x = energyX[bRand];
             b.y = energyY[bRand];
             b.addEventListener('click', function(){
-                var badHit = new createjs.Sound.play("badHit");
+                var badHit =  createjs.Sound.play("badHit");
                 badHit.setVolume(0.3);
 
                 lostClick();
@@ -306,6 +306,11 @@ function generateRandomNumber(max) {
 function lostClick() {
     clicks--;
     if (clicks === 0) {
+        stage.removeChild(gameOver);
+        stage.removeChild(tryAgain);
+        stage.removeChild(overlay);
+
+
         gameEnded();
     } else {
         scoreText.text = score + '/' + totalEnergies + " energies";
