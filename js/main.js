@@ -18,8 +18,6 @@ var clicks  = 10;
 var scoreText;
 var goodEnergy = [];
 var badEnergy = [];
-var finalLevelText;
-
 
 var currentLevel = 1;
 
@@ -28,7 +26,7 @@ var levels = [
         clicks: 10,
         globalTimer: 10,
         requiredClicks: 8,
-        timeToClick: 3000,
+        timeToClick: 2000,
         good:'wind2',
         bad:'coal2',
         nextLevel:'second_level_bg'
@@ -84,8 +82,13 @@ var gameIsRunning = false;
 
 var totalEnergies = 10;
 
-function convertTimeToSeconds(time) {
+overlay = new createjs.Shape();
+overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
+overlay.width = 800;
+overlay.height = 300;
+overlay.alpha = 0.4;
 
+function convertTimeToSeconds(time) {
     return time*60;
 }
 
@@ -135,6 +138,7 @@ function preLoad(){
         "img/final_level_bg.svg",
         "img/bulb.svg",
         "img/final_bg.jpg",
+        "img/final_text.svg",
 
         {id: "goodHit", src:"sound/switch.mp3"},
         {id: "badHit", src:"sound/breaking.mp3"},
@@ -151,24 +155,19 @@ function progressIs(e) {
 }
 
 function blinking(object, times){
-    var numTimes = times;
-    movingObject = object;
-
-    bulbEffect = new createjs.Tween.get(movingObject).to({alpha: 0.3}, 100, createjs.Ease.sineInOut).to({
+    createjs.Tween.get(object).to({alpha: 0.3}, 100, createjs.Ease.sineInOut).to({
         alpha: 0.8}, 100, createjs.Ease.sineInOut).to({
         alpha: 0.1}, 100, createjs.Ease.sineInOut).to({
         alpha: 0.9}, 200, createjs.Ease.sineInOut).to({
-        alpha: 0.3}, 100, createjs.Ease.sineInOut).to({
         alpha: 0.1}, 200, createjs.Ease.sineInOut).to({
         alpha: 0.9}, 100, createjs.Ease.sineInOut).to({
         alpha: 0.7}, 100, createjs.Ease.sineInOut).to({
         alpha: 1}, 100, createjs.Ease.sineInOut).call(function(){
-            numTimes--;
-            if(numTimes >= 0){
-                blinking(movingObject, numTimes)
+            times--;
+            if(times >= 0){
+                blinking(object, times)
             }
         });
-
 }
 
 function showTitle(s) {
@@ -447,8 +446,6 @@ function levelLost() {
     stage.addChild(tryAgain);
     tryAgain.addEventListener('click', function () {
         playGameOver.stop();
-        goodEnergy.splice(levels[currentLevel-1].good);
-        badEnergy.splice(levels[currentLevel-1].bad);
         stage.removeChild(overlay);
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
@@ -483,19 +480,23 @@ function reachedFinalLevel() {
     stage.addChild(finalObject);
 
     blinking (finalObject, 1);
-    /*
 
-        var summaryTitles = new createjs.Bitmap("img/try_again.svg");
-        summaryTitles.x = 20;
-        summaryTitles.y = 700;
-        stage.addChild(summaryTitles);
+    var smallOverlay = new createjs.Shape();
+    smallOverlay.alpha = 0;
+    smallOverlay.graphics.beginFill('black').drawRect(0, 0, 800, 100);
+    smallOverlay.y = 400;
+    stage.addChild(smallOverlay);
 
-        createjs.Tween.get(summaryTitles).to({
-            x: 20,
-            y: -1000,
-           alpha: 1
-       }, 3000, createjs.Ease.linear)
-    });*/
+    var finalText = new createjs.Bitmap("img/final_text.svg");
+    finalText.alpha = 0;
+    finalText.width = 526;
+    finalText.regX = finalText.width/2;
+    finalText.x = stage.canvas.width/2;
+    finalText.y = 405;
+    stage.addChild(finalText);
+
+    new createjs.Tween.get(smallOverlay).wait(3000).to({alpha:0.4}, 2000);
+    new createjs.Tween.get(finalText).wait(3000).to({alpha:1}, 2000);
 }
 
 function gameReset() {
@@ -506,20 +507,24 @@ function gameReset() {
     clicks = levels[currentLevel - 1].clicks;
     score = 0;
     scoreText.x = scoreText.y = 20;
-    if(levels[currentLevel-1].good){
-        goodEnergy.push(levels[currentLevel-1].good);
-    }
-    if(levels[currentLevel-1].bad){
-        badEnergy.push(levels[currentLevel-1].bad);
-    }
+
     console.log(goodEnergy, badEnergy);
     clearInterval(timeOut);
     stage.removeChild(overlay);
     stage.removeChild(gameOver);
     stage.removeChild(tryAgain);
     if (gotReward === true) {
+        if(levels[currentLevel-1].good){
+            goodEnergy.push(levels[currentLevel-1].good);
+        }
+
+        if(levels[currentLevel-1].bad){
+            badEnergy.push(levels[currentLevel-1].bad);
+        }
         stage.removeChild(reward);
+
     }
+
     gameIsRunning = true;
     showEnergy();
 }
