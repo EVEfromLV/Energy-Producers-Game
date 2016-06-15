@@ -67,7 +67,7 @@ var levels = [
     }, {
         clicks: 10,
         globalTimer: 45,
-        requiredClicks: 10,
+        requiredClicks: 9,
         timeToClick: 2000,
         good:'solar2',
         bad:'',
@@ -133,9 +133,15 @@ function preLoad(){
         "img/fifth_level_bg.svg",
         "img/sixth_level_bg.svg",
         "img/final_level_bg.svg",
+        "img/bulb.svg",
+        "img/final_bg.jpg",
 
         {id: "goodHit", src:"sound/switch.mp3"},
-        {id: "badHit", src:"sound/breaking.mp3"}
+        {id: "badHit", src:"sound/breaking.mp3"},
+        {id: "playGameOver", src:"sound/game_over.mp3"},
+        {id: "playGameWon", src:"sound/level_won1.mp3"},
+        {id: "gameWon", src:"sound/game_won2.mp3"},
+        {id: "electricity", src:"sound/electric_lights.mp3"}
     ])
 }
 
@@ -144,15 +150,43 @@ function progressIs(e) {
     stage.update();
 }
 
+function blinking(object, times){
+    var numTimes = times;
+    movingObject = object;
+
+    bulbEffect = new createjs.Tween.get(movingObject).to({alpha: 0.3}, 100, createjs.Ease.sineInOut).to({
+        alpha: 0.8}, 100, createjs.Ease.sineInOut).to({
+        alpha: 0.1}, 100, createjs.Ease.sineInOut).to({
+        alpha: 0.9}, 200, createjs.Ease.sineInOut).to({
+        alpha: 0.3}, 100, createjs.Ease.sineInOut).to({
+        alpha: 0.1}, 200, createjs.Ease.sineInOut).to({
+        alpha: 0.9}, 100, createjs.Ease.sineInOut).to({
+        alpha: 0.7}, 100, createjs.Ease.sineInOut).to({
+        alpha: 1}, 100, createjs.Ease.sineInOut).call(function(){
+            numTimes--;
+            if(numTimes >= 0){
+                blinking(movingObject, numTimes)
+            }
+        });
+
+}
+
 function showTitle(s) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", tock);
 
+    var electricity = createjs.Sound.play("electricity");
+    electricity.setVolume(0.8);
+
     var gameBg = new createjs.Bitmap(queue.getResult("img/bg.jpg"));
     stage.addChild(gameBg);
 
+    var preLoadBg = new createjs.Bitmap("img/preload_bg.jpg");
+    stage.addChild(preLoadBg);
+
     var titleBg = new createjs.Bitmap(queue.getResult("img/start_bg.jpg"));
     stage.addChild(titleBg);
+    blinking (titleBg, 2);
 
     var startBtn = new createjs.Bitmap(queue.getResult("img/start_btn.png"));
     stage.addChild(startBtn);
@@ -211,6 +245,7 @@ function showTitle(s) {
 
     startBtn.addEventListener('click',
         function(){
+            stage.removeChild(preLoadBg);
             stage.removeChild(this.target);
             stage.removeChild(titleView);
 
@@ -249,8 +284,8 @@ function showEnergy() {
 
     if (gameIsRunning === true) {
 
-        gRand = generateRandomNumber(7);
-        bRand = generateRandomNumber(7);
+        var gRand = generateRandomNumber(7);
+        var bRand = generateRandomNumber(7);
 
         if (gRand === bRand) {
             showEnergy();
@@ -294,8 +329,6 @@ function showEnergy() {
             }, 2000);
         }
 
-    } else {
-        return;
     }
 }
 
@@ -309,7 +342,6 @@ function lostClick() {
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
         stage.removeChild(overlay);
-
 
         gameEnded();
     } else {
@@ -345,6 +377,9 @@ function levelWon() {
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
 
+        var playGameWon = createjs.Sound.play("playGameWon");
+        playGameWon.setVolume(0.5);
+
         overlay = new createjs.Shape();
         overlay.graphics.beginFill('black').drawRect(0, 0, 800, 500);
         overlay.width = 800;
@@ -368,6 +403,7 @@ function levelWon() {
         nextLevelBtn.y = stage.canvas.height / 2 + 140;
         stage.addChild(nextLevelBtn);
         nextLevelBtn.addEventListener('click', function () {
+            playGameWon.stop();
             currentLevel++;
             console.log("nextLevel btn clicked");
             stage.removeChild(reward, nextLevelBtn, scoreText);
@@ -384,6 +420,9 @@ function levelWon() {
 }
 
 function levelLost() {
+    var playGameOver = createjs.Sound.play("playGameOver");
+    playGameOver.setVolume(0.5);
+
     overlay = new createjs.Shape();
     overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
     overlay.width = 800;
@@ -407,6 +446,7 @@ function levelLost() {
     tryAgain.y = stage.canvas.height / 2 + 10;
     stage.addChild(tryAgain);
     tryAgain.addEventListener('click', function () {
+        playGameOver.stop();
         goodEnergy.splice(levels[currentLevel-1].good);
         badEnergy.splice(levels[currentLevel-1].bad);
         stage.removeChild(overlay);
@@ -419,15 +459,43 @@ function levelLost() {
 }
 
 function reachedFinalLevel() {
+    var gameWon = createjs.Sound.play("gameWon");
+    gameWon.setVolume(0.5);
+
     console.log("Reached final level");
-    finalLevelText = new createjs.Text('You reached the final level', '20px Verdana', 'white');
-    stage.addChild(finalLevelText);
     stage.removeChild(overlay);
     stage.removeChild(gameOver);
     stage.removeChild(tryAgain);
     stage.removeChild(scoreText);
     stage.removeChild(g);
     stage.removeChild(b);
+
+    var finalBg = new createjs.Bitmap(queue.getResult("img/final_bg.jpg"));
+    stage.addChild(finalBg);
+
+    var finalObject = new createjs.Bitmap("img/bulb.svg");
+    finalObject.width = 393;
+    finalObject.height = 520;
+    finalObject.regX = finalObject.width/2;
+    finalObject.regY = finalObject.height/2;
+    finalObject.x = stage.canvas.width/2;
+    finalObject.y = stage.canvas.height/2;
+    stage.addChild(finalObject);
+
+    blinking (finalObject, 1);
+    /*
+
+        var summaryTitles = new createjs.Bitmap("img/try_again.svg");
+        summaryTitles.x = 20;
+        summaryTitles.y = 700;
+        stage.addChild(summaryTitles);
+
+        createjs.Tween.get(summaryTitles).to({
+            x: 20,
+            y: -1000,
+           alpha: 1
+       }, 3000, createjs.Ease.linear)
+    });*/
 }
 
 function gameReset() {
