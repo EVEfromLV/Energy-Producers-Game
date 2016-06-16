@@ -82,12 +82,6 @@ var gameIsRunning = false;
 
 var totalEnergies = 10;
 
-overlay = new createjs.Shape();
-overlay.graphics.beginFill('black').drawRect(0, 0, 800, 300);
-overlay.width = 800;
-overlay.height = 300;
-overlay.alpha = 0.4;
-
 function convertTimeToSeconds(time) {
     return time*60;
 }
@@ -203,6 +197,7 @@ function showTitle(s) {
 
     rulesBtn.addEventListener('click',
         function(r){
+            electricity.stop();
             stage.removeChild(r.target);
             stage.removeChild(rulesBtn);
             var rulesView = new createjs.Bitmap(queue.getResult("img/rules_bg.jpg"));
@@ -244,6 +239,7 @@ function showTitle(s) {
 
     startBtn.addEventListener('click',
         function(){
+            electricity.stop();
             stage.removeChild(preLoadBg);
             stage.removeChild(this.target);
             stage.removeChild(titleView);
@@ -356,9 +352,7 @@ function gameEnded() {
     gameIsRunning = false;
 
     if (score > levels[currentLevel - 1].requiredClicks) {
-
         levelWon();
-
     } else {
         levelLost();
     }
@@ -373,6 +367,7 @@ function levelWon() {
     else {
         clearInterval(timeOut);
         stage.removeChild(b,g);
+        stage.removeChild(overlay);
         stage.removeChild(gameOver);
         stage.removeChild(tryAgain);
 
@@ -404,7 +399,6 @@ function levelWon() {
         nextLevelBtn.addEventListener('click', function () {
             playGameWon.stop();
             currentLevel++;
-            console.log("nextLevel btn clicked");
             stage.removeChild(reward, nextLevelBtn, scoreText);
             scoreText = new createjs.Text('0' + '/' + totalEnergies + " energies", '20px Verdana', 'white');
             scoreText.x = scoreText.y = 20;
@@ -419,6 +413,8 @@ function levelWon() {
 }
 
 function levelLost() {
+    clearInterval(timeOut);
+
     var playGameOver = createjs.Sound.play("playGameOver");
     playGameOver.setVolume(0.5);
 
@@ -430,8 +426,7 @@ function levelLost() {
     overlay.x = stage.canvas.width / 2 - overlay.width / 2;
     overlay.y = stage.canvas.height / 2 - overlay.height / 2;
     stage.addChild(overlay);
-    stage.removeChild(g);
-    stage.removeChild(b);
+    stage.removeChild(g,b);
     b.removeEventListener();
     g.removeEventListener();
 
@@ -509,10 +504,11 @@ function gameReset() {
     scoreText.x = scoreText.y = 20;
 
     console.log(goodEnergy, badEnergy);
-    clearInterval(timeOut);
+
     stage.removeChild(overlay);
     stage.removeChild(gameOver);
     stage.removeChild(tryAgain);
+
     if (gotReward === true) {
         if(levels[currentLevel-1].good){
             goodEnergy.push(levels[currentLevel-1].good);
