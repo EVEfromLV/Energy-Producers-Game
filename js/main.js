@@ -52,23 +52,15 @@ var levels = [
         requiredClicks: 8,
         timeToClick: 2000,
         good:'hydro2',
-        bad:'',
+        bad:'naturalGas2',
         nextLevel:'fifth_level_bg'
     }, {
         clicks: 10,
         globalTimer: 30,
         requiredClicks:9,
         timeToClick: 2000,
-        good:'naturalGas2',
-        bad:'fuel2',
-        nextLevel:'sixth_level_bg'
-    }, {
-        clicks: 10,
-        globalTimer: 45,
-        requiredClicks: 9,
-        timeToClick: 2000,
         good:'solar2',
-        bad:'',
+        bad:'fuel2',
         nextLevel:''
     }
 ];
@@ -130,9 +122,9 @@ function preLoad(){
         "img/fifth_level_bg.svg",
         "img/sixth_level_bg.svg",
         "img/final_level_bg.svg",
-        "img/bulb.svg",
+        "img/bulb.png",
         "img/final_bg.jpg",
-        "img/final_text.svg",
+        "img/final_text.png",
 
         {id: "goodHit", src:"sound/switch.mp3"},
         {id: "badHit", src:"sound/breaking.mp3"},
@@ -174,7 +166,7 @@ function showTitle(s) {
     var gameBg = new createjs.Bitmap(queue.getResult("img/bg.jpg"));
     stage.addChild(gameBg);
 
-    var preLoadBg = new createjs.Bitmap("img/preload_bg.jpg");
+    var preLoadBg = new createjs.Bitmap(queue.getResult("img/preload_bg.jpg"));
     stage.addChild(preLoadBg);
 
     var titleBg = new createjs.Bitmap(queue.getResult("img/start_bg.jpg"));
@@ -216,7 +208,7 @@ function showTitle(s) {
                     stage.removeChild(rulesView);
                 });
 
-            var gitHubBtn = new createjs.Bitmap(queue.getResult("img/github.svg"));
+            var gitHubBtn = new createjs.Bitmap("img/github.svg");
             stage.addChild(gitHubBtn);
             gitHubBtn.x = 640;
             gitHubBtn.y = 520;
@@ -226,7 +218,7 @@ function showTitle(s) {
                     window.open("https://github.com/EVEfromLV/Energy-Producers-Game");
                 });
 
-            var pdfBBtn = new createjs.Bitmap(queue.getResult("img/pdf.svg"));
+            var pdfBBtn = new createjs.Bitmap("img/pdf.svg");
             stage.addChild(pdfBBtn);
             pdfBBtn.x = 700;
             pdfBBtn.y = 520;
@@ -360,7 +352,7 @@ function gameEnded() {
 
 function levelWon() {
 
-    if (currentLevel === 6) {
+    if (currentLevel === 5) {
         reachedFinalLevel();
     }
 
@@ -436,7 +428,8 @@ function levelLost() {
     stage.addChild(gameOver);
 
     tryAgain = new createjs.Bitmap("img/try_again.svg");
-    tryAgain.x = stage.canvas.width / 2 - 90;
+
+        tryAgain.x = stage.canvas.width / 2 - 90;
     tryAgain.y = stage.canvas.height / 2 + 10;
     stage.addChild(tryAgain);
     tryAgain.addEventListener('click', function () {
@@ -465,7 +458,7 @@ function reachedFinalLevel() {
     var finalBg = new createjs.Bitmap(queue.getResult("img/final_bg.jpg"));
     stage.addChild(finalBg);
 
-    var finalObject = new createjs.Bitmap("img/bulb.svg");
+    var finalObject = new createjs.Bitmap(queue.getResult("img/bulb.png"));
     finalObject.width = 393;
     finalObject.height = 520;
     finalObject.regX = finalObject.width/2;
@@ -482,7 +475,7 @@ function reachedFinalLevel() {
     smallOverlay.y = 400;
     stage.addChild(smallOverlay);
 
-    var finalText = new createjs.Bitmap("img/final_text.svg");
+    var finalText = new createjs.Bitmap(queue.getResult("img/final_text.png"));
     finalText.alpha = 0;
     finalText.width = 526;
     finalText.regX = finalText.width/2;
